@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script src="js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="offset-4 col-4">
+                    <div class="card shadow border border-0">
+                        <h3 class="card-header bg-primary text-white p-3">Calculator</h3>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="offset-1 col-3">
+                                    <label for="">Number1:</label>
+                                </div>
+                                <div class="col-7">
+                                    <input id="num1" type="number" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="offset-1 col-3">
+                                    <label for="">Number2:</label>
+                                </div>
+                                <div class="col-7">
+                                    <input id="num2" type="number" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="cal-12 text-center">
+                                    <button onclick="plusClick()" type="button" class="btn btn-primary ps-4 pe-4">+</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="offset-2 col-3">
+                                    <span>Result: </span><span class="fw-bold" id="result">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+    function plusClick() {
+        const num1Elem = document.getElementById("num1");
+        const num2Elem = document.getElementById("num2");
+        if(num1Elem.value === "" || num2Elem.value === "") {
+            alert("Please enter both number");
+        }
+        else {
+            const resultElem = document.getElementById("result");
+            const result = parseFloat(num1Elem.value) + parseFloat(num2Elem.value)
+            resultElem.innerText = result;
+        }
+    }
+</script>

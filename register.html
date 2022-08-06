@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600;700&display=swap');
+            body {
+                font-family: Prompt;
+                font-weight: 300;
+                margin: 0;
+            }
+            .line-input {
+                margin-bottom: 14px; /* css properties : css value */
+            }
+            .card {
+                /*border: 1px solid #dadce0;*/
+                box-shadow: 3px 3px 6px #dadce0;
+                border-radius: 10px;
+                width: 40%;
+                margin-top: 20px;
+            }
+            .card-header {
+                background-color: dodgerblue;
+                color: white;
+                text-align: left;
+                margin-top: 0;
+                padding: 20px;
+                border-radius: 10px 10px 0 0;
+                border-bottom: 1px solid #dadce0;
+            }
+            .input-layout {
+                text-align: left;
+                margin-left: 60px;
+            }
+            .custom-label {
+                width: 120px;
+                display: inline-block;
+            }
+            .primary-button { /* normal state */
+                background-color: dodgerblue;
+                color: white;
+                padding: 8px 0 8px 0;
+                width: 120px;
+                border: none;
+                border-radius: 6px;
+                font-weight: bold;
+                font-size: 16px;
+                font-family: Prompt;
+                margin-bottom: 20px;
+                transition: all .3s;
+            }
+            .primary-button:hover { /* hover state */
+                width: 150px;
+            }
+            .footer{
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                background-color: dodgerblue;
+                color: white;
+                padding: 20px;
+                border: 1px solid #dadce0;
+            }
+            .input-custom{
+                border-radius: 3px;
+                border: 1px solid #dadce0;
+                font-size: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <center>
+            <img width = "100px"src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/800px-Google_%22G%22_Logo.svg.png" alt="google"><br>
+            <div class="card">
+                <h2 class="card-header">Register</h2>
+                <div class="line-input input-layout">
+                    <label class="custom-label" for="">E-mail:</label>
+                    <input type="text" class ="input-custom">
+                </div>
+                <div class="line-input input-layout">
+                    <label class="custom-label" for="">Password:</label>
+                    <input type="text" class="input-custom">
+                </div>
+                <div class="line-input input-layout">
+                    <label class="custom-label" for="">Name:</label>
+                    <input type="text" class="input-custom">
+                </div>
+                <div class="line-input">
+                    <input type="checkbox">
+                    <label for="">Click to agree Term of us</label>
+                </div>
+                <div class="line-input">
+                    <button class="primary-button">Submit</button>
+                </div>
+            </div>
+            <div class = "footer">
+                    <span>Copyright by pom</span>
+             </div>
+            
+        </center>
+    </body>
+</html>
