@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income outcome</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/dayjs.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center my-4">
+                <h1>Income Outcome</h1>
+            </div>
+        </div>
+        <div class="row my-4">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-3">
+                        <label class="" for="">Desc:</label>
+                    </div>
+                    <div class="col-9">
+                        <input id="desc" type="text" class="form-control">
+                    </div>
+                </div>                
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-3">
+                        <label class="" for="">Amount:</label>
+                    </div>
+                    <div class="col-9">
+                        <input id="amount" type="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                    <button type="button" class="btn btn-primary" onclick="addIncomeOutcome('income')">income</button>
+                    <button type="button" class="btn btn-danger" onclick="addIncomeOutcome('outcome')">outcome</button>
+            </div>
+           
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-bordered" width="100%" align="center">
+                    <thead class="table-success">
+                        <tr>
+                            <th>No.</th> 
+                            <th>Desc</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" align="center">
+                        
+                    </tbody>
+                    <tfoot class="table-warning">
+                        <tr>
+                            <th colspan="2">Total</th> 
+                            <th class="text-center" id ='total'>0</th>
+                            <th colspan="2">Baht</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    let no = 1;
+    let total =0;
+    function addIncomeOutcome(type) {
+        const descElem = document.getElementById('desc');
+        const amountElem = document.getElementById('amount');
+        const tableBodyElem = document.getElementById('table-body');
+        const bgClass = type === 'income'? 'table-primary': 'table-danger';
+        const amount = type === 'income'? `${amountElem.value}`:`-${amountElem.value}`;
+
+        if(descElem.value === '' || amountElem.value === '') {
+            alert('Please enter all input');
+        }
+        else {
+            let html = `
+                <tr id="row-${no}" class="${bgClass}">
+                    <td>${no}</td>
+                    <td>${descElem.value}</td>
+                    <td class="fw-bold">${parseFloat(amount).toLocaleString(undefined)}</td>
+                    <td>${dayjs().format('DD/MM/YYYY')}</td>
+                    <td>
+                        <button class="btn btn-success">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteIncome(${no})">Delete</button>
+                    </td>
+                </tr>
+            `
+            tableBodyElem.insertAdjacentHTML('beforeend', html);
+            descElem.value = '';
+            amountElem.value = '';
+            const total_ele = document.getElementById("total");
+
+            total += parseFloat(amount);
+            total_ele.innerText = total.toLocaleString(undefined);
+            no++;
+        }
+    }
+
+    function deleteIncome(index) {
+        const rowElem = document.getElementById('row-'+index);
+        total -= parseFloat(rowElem.children[2].innerText.replace(',', ''));
+        const total_ele = document.getElementById("total");
+        total_ele.innerText = total.toLocaleString(undefined);
+        rowElem.remove();
+        no--;
+        reOrderNo();
+    }
+
+    function reOrderNo() {
+        const trList = document.querySelectorAll('[id^=row-]');
+        for(let i=0; i<trList.length; i++) {
+            trList[i].id = `row-${i+1}`;
+            trList[i].children[0].innerText = i+1;
+            trList[i].children[4].children[1].onclick = function() {deleteIncome(i+1)};
+        }
+    }
+
+</script>
