@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,8 +8,9 @@
     <title>Income outcome</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/dayjs.min.js"></script>
+    <script src="js/moment.min.js"></script>
 </head>
+
 <body>
     <div class="container">
         <div class="row">
@@ -25,7 +27,7 @@
                     <div class="col-9">
                         <input id="desc" type="text" class="form-control">
                     </div>
-                </div>                
+                </div>
             </div>
             <div class="col-4">
                 <div class="row">
@@ -33,22 +35,34 @@
                         <label class="" for="">Amount:</label>
                     </div>
                     <div class="col-9">
-                        <input id="amount" type="text" class="form-control">
+                        <input id="amount" type="number" class="form-control">
                     </div>
                 </div>
             </div>
             <div class="col-4">
-                    <button type="button" class="btn btn-primary" onclick="addIncomeOutcome('income')">income</button>
-                    <button type="button" class="btn btn-danger" onclick="addIncomeOutcome('outcome')">outcome</button>
+                <div class="row">
+                    <div class="col-3">
+                        <label for="">Date:</label>
+                    </div>
+                    <div class="col-9">
+                        <input type="date" id="date" class="form-control">
+                    </div>
+                </div>
+
             </div>
-           
+        </div>
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <button type="button" class="btn btn-primary" onclick="addIncomeOutcome('income')">income</button>
+                <button type="button" class="btn btn-danger" onclick="addIncomeOutcome('outcome')">outcome</button>
+            </div>
         </div>
         <div class="row">
             <div class="col-12">
                 <table class="table table-bordered" width="100%" align="center">
                     <thead class="table-success">
                         <tr>
-                            <th>No.</th> 
+                            <th>No.</th>
                             <th>Desc</th>
                             <th>Amount</th>
                             <th>Date</th>
@@ -56,33 +70,77 @@
                         </tr>
                     </thead>
                     <tbody id="table-body" align="center">
-                        
+
                     </tbody>
                     <tfoot class="table-warning">
                         <tr>
-                            <th colspan="2">Total</th> 
-                            <th class="text-center" id ='total'>0</th>
+                            <th colspan="2">Total</th>
+                            <th class="text-center" id='total'>0</th>
                             <th colspan="2">Baht</th>
                         </tr>
                     </tfoot>
                 </table>
             </div>
         </div>
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row my-3">
+                            <div class="col-3">
+                                <label for="">Desc:</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="text" class="form-control" id="descEd">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-3">
+                                <label for="">Amount:</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="number" class="form-control" id="amountEd">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <label for="">Date:</label>
+                            </div>
+                            <div class="col-9">
+                                <input type="date" class="form-control" id="dateEd">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id ="save" data-bs-dismiss="modal">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
+
 </html>
 
 <script>
     let no = 1;
-    let total =0;
+    let total = 0;
     function addIncomeOutcome(type) {
         const descElem = document.getElementById('desc');
         const amountElem = document.getElementById('amount');
+        const dateElem = document.getElementById('date');
         const tableBodyElem = document.getElementById('table-body');
-        const bgClass = type === 'income'? 'table-primary': 'table-danger';
-        const amount = type === 'income'? `${amountElem.value}`:`-${amountElem.value}`;
+        const bgClass = type === 'income' ? 'table-primary' : 'table-danger';
+        const amount = type === 'income' ? `${amountElem.value}` : `-${amountElem.value}`;
 
-        if(descElem.value === '' || amountElem.value === '') {
+        if (descElem.value === '' || amountElem.value === '' || dateElem.value === '') {
             alert('Please enter all input');
         }
         else {
@@ -91,9 +149,9 @@
                     <td>${no}</td>
                     <td>${descElem.value}</td>
                     <td class="fw-bold">${parseFloat(amount).toLocaleString(undefined)}</td>
-                    <td>${dayjs().format('DD/MM/YYYY')}</td>
+                    <td>${moment(dateElem.value).format('DD/MM/YYYY')}</td>
                     <td>
-                        <button class="btn btn-success">Edit</button>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"  onclick="openEditModal(${no})">Edit</button>
                         <button class="btn btn-danger" onclick="deleteIncome(${no})">Delete</button>
                     </td>
                 </tr>
@@ -101,6 +159,7 @@
             tableBodyElem.insertAdjacentHTML('beforeend', html);
             descElem.value = '';
             amountElem.value = '';
+            dateElem.value = '';
             const total_ele = document.getElementById("total");
 
             total += parseFloat(amount);
@@ -110,7 +169,7 @@
     }
 
     function deleteIncome(index) {
-        const rowElem = document.getElementById('row-'+index);
+        const rowElem = document.getElementById('row-' + index);
         total -= parseFloat(rowElem.children[2].innerText.replace(',', ''));
         const total_ele = document.getElementById("total");
         total_ele.innerText = total.toLocaleString(undefined);
@@ -121,11 +180,33 @@
 
     function reOrderNo() {
         const trList = document.querySelectorAll('[id^=row-]');
-        for(let i=0; i<trList.length; i++) {
-            trList[i].id = `row-${i+1}`;
-            trList[i].children[0].innerText = i+1;
-            trList[i].children[4].children[1].onclick = function() {deleteIncome(i+1)};
+        for (let i = 0; i < trList.length; i++) {
+            trList[i].id = `row-${i + 1}`;
+            trList[i].children[0].innerText = i + 1;
+            trList[i].children[4].children[1].onclick = function () { deleteIncome(i + 1) };
         }
+    }
+    function openEditModal(num){
+        const descElem = document.getElementById('descEd');
+        const amountElem = document.getElementById('amountEd');
+        const dateElem = document.getElementById('dateEd');
+        const data_ele =  document.getElementById(`row-${num}`);
+        const save_ele = document.getElementById("save");
+        save_ele.onclick = function () {Edit(num)};
+        const data =  data_ele.children
+        descElem.value = data[1].innerText;
+        amountElem.value =  data[2].innerText.replace(",","");
+        dateElem.value = moment(data[3].innerText, 'DD/MM/YYYY').format('YYYY-MM-DD');
+
+    }
+    function Edit(num){
+        const data = document.getElementById(`row-${num}`)
+        const descElem = document.getElementById('descEd');
+        const amountElem = document.getElementById('amountEd');
+        const dateElem = document.getElementById('dateEd');
+        data.children[1].innerText= descElem.value;
+        data.children[2].innerText = parseFloat(amountElem.value).toLocaleString(undefined);
+        data.children[3].innerText = moment(dateElem.value).format("DD/MM/YYYY");
     }
 
 </script>
