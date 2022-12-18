@@ -204,6 +204,15 @@
         const descElem = document.getElementById('descEd');
         const amountElem = document.getElementById('amountEd');
         const dateElem = document.getElementById('dateEd');
+        const old_amount = data.children[2].innerText.replace(",","");
+
+        total -= parseFloat(old_amount);
+        total += parseFloat(amountElem.value);
+        
+        let bgclass = parseFloat(amountElem.value) >=0 ? "table-primary" : "table-danger";
+        data.className = bgclass;
+        const retotalEle = document.getElementById("total");
+        retotalEle.innerText = total.toLocaleString(undefined); 
         data.children[1].innerText= descElem.value;
         data.children[2].innerText = parseFloat(amountElem.value).toLocaleString(undefined);
         data.children[3].innerText = moment(dateElem.value).format("DD/MM/YYYY");
