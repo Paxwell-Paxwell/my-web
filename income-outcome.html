@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <script src="js/bootstrap.min.js"></script>
     <script src="js/moment.min.js"></script>
+    <script src="js/axios.min.js"></script>
 </head>
 
 <body>
@@ -132,6 +133,38 @@
 <script>
     let no = 1;
     let total = 0;
+    axios.get("http://127.0.0.1:8000/get-all-income")
+        .then(function (response) {
+            const data = response.data;
+            console.log(data.data);
+            ele_data = data.data
+            const tableBodyElem = document.getElementById('table-body');
+            for(let i=0;i<ele_data.length;i++){
+                const bgClass = ele_data[i].amount >= 0 ? 'table-primary' : 'table-danger';
+                let html = `<tr id="row-${ele_data[i].id}" class="${bgClass}">
+                    <td>${no}</td>
+                    <td>${ele_data[i].description}</td>
+                    <td class="fw-bold">${parseFloat(ele_data[i].amount).toLocaleString(undefined)}</td>
+                    <td>${moment(ele_data[i].date).format('DD/MM/YYYY')}</td>
+                    <td>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"  onclick="openEditModal(${ele_data[i].id})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteIncome(${ele_data[i].id})">Delete</button>
+                    </td>
+                </tr>
+                `
+                total += parseFloat(ele_data[i].amount);
+                tableBodyElem.insertAdjacentHTML('beforeend', html);
+                no++;
+            }
+            const total_ele = document.getElementById("total");
+            total_ele.innerText = total.toLocaleString(undefined);
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        })
+
+
     function addIncomeOutcome(type) {
         const descElem = document.getElementById('desc');
         const amountElem = document.getElementById('amount');
@@ -169,13 +202,22 @@
     }
 
     function deleteIncome(index) {
-        const rowElem = document.getElementById('row-' + index);
-        total -= parseFloat(rowElem.children[2].innerText.replace(',', ''));
-        const total_ele = document.getElementById("total");
-        total_ele.innerText = total.toLocaleString(undefined);
-        rowElem.remove();
-        no--;
-        reOrderNo();
+        axios.delete("http://127.0.0.1:8000/delete-income", {data: {id: index}} )
+            .then(function (response){
+                console.log(response.data);
+                const rowElem = document.getElementById('row-' + index);
+                total -= parseFloat(rowElem.children[2].innerText.replace(',', ''));
+                const total_ele = document.getElementById("total");
+                total_ele.innerText = total.toLocaleString(undefined);
+                rowElem.remove();
+                no--;
+                reOrderNo();
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            })
+       
     }
 
     function reOrderNo() {
