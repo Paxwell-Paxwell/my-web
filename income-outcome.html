@@ -177,87 +177,105 @@
             alert('Please enter all input');
         }
         else {
-            let html = `
-                <tr id="row-${no}" class="${bgClass}">
+            axios.post("http://127.0.0.1:8000/insert-income",{desc: descElem.value, amount: parseFloat(amount) , date: dateElem.value})
+            .then(function(response){
+                console.log(response.data);
+                const data = response.data;
+                let html = `
+                <tr id="row-${data.insertedID}" class="${bgClass}">
                     <td>${no}</td>
                     <td>${descElem.value}</td>
                     <td class="fw-bold">${parseFloat(amount).toLocaleString(undefined)}</td>
                     <td>${moment(dateElem.value).format('DD/MM/YYYY')}</td>
                     <td>
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"  onclick="openEditModal(${no})">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteIncome(${no})">Delete</button>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop"  onclick="openEditModal(${data.insertedID})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteIncome(${data.insertedID})">Delete</button>
                     </td>
                 </tr>
-            `
-            tableBodyElem.insertAdjacentHTML('beforeend', html);
-            descElem.value = '';
-            amountElem.value = '';
-            dateElem.value = '';
-            const total_ele = document.getElementById("total");
-
-            total += parseFloat(amount);
-            total_ele.innerText = total.toLocaleString(undefined);
-            no++;
-        }
-    }
-
-    function deleteIncome(index) {
-        axios.delete("http://127.0.0.1:8000/delete-income", {data: {id: index}} )
-            .then(function (response){
-                console.log(response.data);
-                const rowElem = document.getElementById('row-' + index);
-                total -= parseFloat(rowElem.children[2].innerText.replace(',', ''));
+                `
+                tableBodyElem.insertAdjacentHTML('beforeend', html);
+                descElem.value = '';
+                amountElem.value = '';
+                dateElem.value = '';
                 const total_ele = document.getElementById("total");
+
+                total += parseFloat(amount);
                 total_ele.innerText = total.toLocaleString(undefined);
-                rowElem.remove();
-                no--;
-                reOrderNo();
+                no++;
             })
             .catch(function (error) {
                 // handle error
                 console.log(error);
             })
-       
+            
+        }
+    }
+
+    function deleteIncome(index) {
+        const deleteFlag = confirm('Are you sure to delete this row!!!');
+        if(deleteFlag){
+            axios.delete("http://127.0.0.1:8000/delete-income", {data: {id: index}} )
+                .then(function (response){
+                    console.log(response.data);
+                    const rowElem = document.getElementById('row-' + index);
+                    total -= parseFloat(rowElem.children[2].innerText.replace(',', ''));
+                    const total_ele = document.getElementById("total");
+                    total_ele.innerText = total.toLocaleString(undefined);
+                    rowElem.remove();
+                    no--;
+                    reOrderNo();
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        }
     }
 
     function reOrderNo() {
         const trList = document.querySelectorAll('[id^=row-]');
         for (let i = 0; i < trList.length; i++) {
-            trList[i].id = `row-${i + 1}`;
             trList[i].children[0].innerText = i + 1;
-            trList[i].children[4].children[1].onclick = function () { deleteIncome(i + 1) };
         }
     }
-    function openEditModal(num){
+    function openEditModal(id){
         const descElem = document.getElementById('descEd');
         const amountElem = document.getElementById('amountEd');
         const dateElem = document.getElementById('dateEd');
-        const data_ele =  document.getElementById(`row-${num}`);
+        const data_ele =  document.getElementById(`row-${id}`);
         const save_ele = document.getElementById("save");
-        save_ele.onclick = function () {Edit(num)};
+        save_ele.onclick = function () {Edit(id)};
         const data =  data_ele.children
         descElem.value = data[1].innerText;
         amountElem.value =  data[2].innerText.replace(",","");
         dateElem.value = moment(data[3].innerText, 'DD/MM/YYYY').format('YYYY-MM-DD');
 
     }
-    function Edit(num){
-        const data = document.getElementById(`row-${num}`)
+    function Edit(index){
+        const data = document.getElementById(`row-${index}`)
         const descElem = document.getElementById('descEd');
         const amountElem = document.getElementById('amountEd');
         const dateElem = document.getElementById('dateEd');
         const old_amount = data.children[2].innerText.replace(",","");
-
-        total -= parseFloat(old_amount);
-        total += parseFloat(amountElem.value);
         
-        let bgclass = parseFloat(amountElem.value) >=0 ? "table-primary" : "table-danger";
-        data.className = bgclass;
-        const retotalEle = document.getElementById("total");
-        retotalEle.innerText = total.toLocaleString(undefined); 
-        data.children[1].innerText= descElem.value;
-        data.children[2].innerText = parseFloat(amountElem.value).toLocaleString(undefined);
-        data.children[3].innerText = moment(dateElem.value).format("DD/MM/YYYY");
+        axios.put("http://127.0.0.1:8000/update-income", {id: index, desc: descElem.value, amount: parseFloat(amountElem.value), date: dateElem.value})
+            .then(function(response){
+                console.log(response.data);
+                total -= parseFloat(old_amount);
+                total += parseFloat(amountElem.value);
+                
+                let bgclass = parseFloat(amountElem.value) >=0 ? "table-primary" : "table-danger";
+                data.className = bgclass;
+                const retotalEle = document.getElementById("total");
+                retotalEle.innerText = total.toLocaleString(undefined); 
+                data.children[1].innerText= descElem.value;
+                data.children[2].innerText = parseFloat(amountElem.value).toLocaleString(undefined);
+                data.children[3].innerText = moment(dateElem.value).format("DD/MM/YYYY");
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            })
     }
 
 </script>

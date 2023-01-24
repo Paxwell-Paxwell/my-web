@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
 import mysql.connector as msql
+from model.IncomeOutcome import IncomeOutcome
 import time
 
 app = FastAPI() 
@@ -50,32 +51,33 @@ def getAllIncome():
     return {"data": result, "took":took ,"error_msg":error_msg}
 
 @app.post("/insert-income")  
-def insert_sql(desc: str = Form(),amount: float =Form(),date:  str = Form() ):
+def insert_sql(body: IncomeOutcome):
     start = time.time()
     mydb = msql.connect(host="localhost", user="root", password="root", port="8889", database="my-web")
     cursor = mydb.cursor()
     rowcount = 0
     error_msg= ""
     try:
-        cursor.execute(f"insert into income_outcome(description,amount,date) values ('{desc}',{amount},'{date}')")
+        cursor.execute(f"insert into income_outcome(description,amount,date) values ('{body.desc}',{body.amount},'{body.date}')")
         mydb.commit()
         rowcount = cursor.rowcount
+        insertedID = cursor.lastrowid
     except Exception as e:
         error_msg =str(e)
     cursor.close()
     mydb.close()
     took = time.time()-start
-    return {"rowcount": rowcount,"took": took,"error_msg":error_msg}
+    return {"rowcount": rowcount,"took": took, "insertedID": insertedID, "error_msg":error_msg}
 
 @app.delete("/delete-income")  
-def delete_sql(id: int = Form()):
+def delete_sql(body: IncomeOutcome):
     start = time.time()
     mydb = msql.connect(host="localhost", user="root", password="root", port="8889", database="my-web")
     cursor = mydb.cursor()
     error_msg=""
     rowcount =0
     try:
-        cursor.execute(f"delete from income_outcome where id={id}")
+        cursor.execute(f"delete from income_outcome where id={body.id}")
         mydb.commit()
         rowcount = cursor.rowcount
     except Exception as e:
@@ -86,7 +88,7 @@ def delete_sql(id: int = Form()):
     return {"rowcount": rowcount,"took":took,"error_msg":error_msg}  
     
 @app.put("/update-income")
-def update_sql(id: int =Form(),desc: str = Form(),amount: float =Form(),date:  str = Form()):
+def update_sql(body: IncomeOutcome):
     start_time = time.time()
     err_msg = ""
     rowcount = 0
@@ -94,8 +96,8 @@ def update_sql(id: int =Form(),desc: str = Form(),amount: float =Form(),date:  s
     cursor = mydb.cursor()
     
     try:
-        sql = f"""update income_outcome set description = '{desc}',amount = {amount},date = '{date}'  
-                    where id = {id}
+        sql = f"""update income_outcome set description = '{body.desc}',amount = {body.amount},date = '{body.date}'  
+                    where id = {body.id}
                 """
         cursor.execute(sql)
         mydb.commit()
